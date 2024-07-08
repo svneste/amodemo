@@ -43,6 +43,7 @@ export class LeadsService {
       lead.price = payload.price;
       lead.invoice = payload.invoice;
       lead.bill = payload.bill;
+      lead.service = payload.service;
       return await this.leadsRepo.save(lead);
     }
   }
@@ -60,17 +61,47 @@ export class LeadsService {
       price: leadData.price,
       invoice: null,
       bill: null,
+      service: null,
     };
-    console.log(leadData);
 
-    leadData.custom_fields_values.map((a) => {
-      if (a.field_id === 2687177) {
-        a.values.map((a) => (payload.invoice = a.value));
-      }
-      if (a.field_id === 2687179) {
-        a.values.map((a) => (payload.bill = a.value));
-      }
-    });
+    if (leadData.custom_fields_values === null) {
+      return;
+    } else {
+      leadData.custom_fields_values.map((a) => {
+        if (a.field_id === 995467) {
+          a.values.map((a) => (payload.invoice = a.value));
+        }
+        if (a.field_id === 995465) {
+          a.values.map((a) => (payload.bill = a.value));
+        }
+        if (a.field_id === 917745) {
+          a.values.map((a) => (payload.service = a.value));
+        }
+      });
+    }
+
     await this.saveLeadData(payload, leadData.id);
+  }
+
+  // Подготовка партии сделок и сохранение сделок в базу
+  async pre(leadlist) {
+    await leadlist.map((a) => {
+      return this.createPayload(a);
+    });
+  }
+
+  async onModuleInit() {
+    const api = await this.createApiService(30938754);
+
+    // Получаем все сделки которые есть в аккаунте и сохраняем эти сделки в базе данных
+    // for (let i = 1; i < 25; i++) {
+    //   const leadlist = await api.get(`/api/v4/leads?page=${i}`);
+    //   if (leadlist.data.length === 0) {
+    //     return;
+    //   } else {
+    //     console.log(leadlist.data._embedded.leads, 'Отработал', i);
+    //     await this.pre(leadlist.data._embedded.leads);
+    //   }
+    // }
   }
 }

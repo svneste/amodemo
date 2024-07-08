@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'demo-backend',
+      name: 'backend',
       script: 'dist/main.js',
     },
   ],

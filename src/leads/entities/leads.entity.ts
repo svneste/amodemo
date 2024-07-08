@@ -49,4 +49,7 @@ export class Leads {
 
   @Column({ nullable: true })
   bill: number;
+
+  @Column({ nullable: true })
+  service: string;
 }

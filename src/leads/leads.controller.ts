@@ -12,6 +12,20 @@ export class LeadsController {
       body.account.id,
       leadId,
     );
+
+    this.leadsService.createPayload(leadData);
+  }
+  @All('/webhookupdate')
+  async getInfoForUpdateLead(@Body() body) {
+    let leadId;
+
+    body.leads.update.map((a) => (leadId = a.id));
+
+    const leadData = await this.leadsService.getLeadInfo(
+      body.account.id,
+      leadId,
+    );
+
     this.leadsService.createPayload(leadData);
   }
 }
