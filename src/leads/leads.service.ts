@@ -93,15 +93,14 @@ export class LeadsService {
   async onModuleInit() {
     const api = await this.createApiService(30938754);
 
-    // Получаем все сделки которые есть в аккаунте и сохраняем эти сделки в базе данных
-    // for (let i = 1; i < 25; i++) {
-    //   const leadlist = await api.get(`/api/v4/leads?page=${i}`);
-    //   if (leadlist.data.length === 0) {
-    //     return;
-    //   } else {
-    //     console.log(leadlist.data._embedded.leads, 'Отработал', i);
-    //     await this.pre(leadlist.data._embedded.leads);
-    //   }
-    // }
+    for (let i = 1; i < 25; i++) {
+      const leadlist = await api.get(`/api/v4/leads?page=${i}`);
+      if (leadlist.data.length === 0) {
+        return;
+      } else {
+        console.log(leadlist.data._embedded.leads, 'Отработал', i);
+        await this.pre(leadlist.data._embedded.leads);
+      }
+    }
   }
 }
