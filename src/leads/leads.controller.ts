@@ -28,4 +28,21 @@ export class LeadsController {
 
     this.leadsService.createPayload(leadData);
   }
+
+  @All('/webhookdelete')
+  async getInfoForDeleteLead(@Body() body) {
+    let leadId;
+
+    body.leads.delete.map((a) => (leadId = a.id));
+
+    this.leadsService.ifLeadDelete(leadId);
+  }
+
+  @All('/webhookaddlead')
+  async getInfoForAddLead(@Body() body) {
+    let leadId;
+
+    body.leads.add.map((a) => (leadId = a.id));
+    this.leadsService.leadCreate(leadId, body.leads.add);
+  }
 }

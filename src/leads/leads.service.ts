@@ -64,8 +64,6 @@ export class LeadsService {
       service: null,
     };
 
-    console.log(leadData.custom_fields_values);
-
     if (leadData.custom_fields_values === null) {
       return;
     } else {
@@ -83,6 +81,50 @@ export class LeadsService {
     }
 
     await this.saveLeadData(payload, leadData.id);
+  }
+
+  // Если сделка удалена обновляем инфу в базе
+
+  async ifLeadDelete(leadID) {
+    const lead = await this.leadsRepo.findOne({
+      where: {
+        idLead: leadID,
+      },
+    });
+    lead.status_id = '000';
+    return await this.leadsRepo.save(lead);
+  }
+
+  // при создании сделки
+
+  async leadCreate(leadId, data) {
+    const payload = {
+      idLead: '',
+      createdLead: null,
+      updatedLead: null,
+      closedLead: null,
+      leadName: '',
+      responsible_user: null,
+      status_id: null,
+      pipeline_id: null,
+      price: null,
+      invoice: null,
+      bill: null,
+      service: null,
+    };
+
+    data.map((a) => {
+      payload.idLead = a.id;
+      payload.createdLead = a.created_at;
+      payload.updatedLead = a.updated_at;
+      payload.leadName = a.name;
+      payload.responsible_user = a.responsible_user_id;
+      payload.status_id = a.status_id;
+      payload.pipeline_id = a.pipeline_id;
+      payload.price = a.price;
+    });
+
+    await this.saveLeadData(payload, leadId);
   }
 
   // Подготовка партии сделок и сохранение сделок в базу
