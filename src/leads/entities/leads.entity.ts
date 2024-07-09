@@ -41,13 +41,13 @@ export class Leads {
   @Column()
   pipeline_id: string;
 
-  @Column()
+  @Column('float')
   price: number;
 
-  @Column({ nullable: true })
+  @Column('float', { nullable: true })
   invoice: number;
 
-  @Column({ nullable: true })
+  @Column('float', { nullable: true })
   bill: number;
 
   @Column({ nullable: true })

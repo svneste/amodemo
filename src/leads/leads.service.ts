@@ -64,14 +64,16 @@ export class LeadsService {
       service: null,
     };
 
+    console.log(leadData.custom_fields_values);
+
     if (leadData.custom_fields_values === null) {
       return;
     } else {
       leadData.custom_fields_values.map((a) => {
-        if (a.field_id === 995467) {
+        if (a.field_id === 994677) {
           a.values.map((a) => (payload.invoice = a.value));
         }
-        if (a.field_id === 995465) {
+        if (a.field_id === 994679) {
           a.values.map((a) => (payload.bill = a.value));
         }
         if (a.field_id === 917745) {
