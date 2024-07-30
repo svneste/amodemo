@@ -4,10 +4,16 @@ import { LeadsService } from './leads.service';
 @Controller('leads')
 export class LeadsController {
   constructor(private leadsService: LeadsService) {}
-  @All('/webhook')
+  @All('webhook')
   async getInfoLead(@Body() body) {
     let leadId;
-    body.leads.status.map((a) => (leadId = a.id));
+
+    if (body.leads.status === undefined) {
+      return;
+    } else {
+      body.leads.status.map((a) => (leadId = a.id));
+    }
+
     const leadData = await this.leadsService.getLeadInfo(
       body.account.id,
       leadId,
@@ -15,11 +21,17 @@ export class LeadsController {
 
     this.leadsService.createPayload(leadData);
   }
-  @All('/webhookupdate')
+  @All('webhookupdate')
   async getInfoForUpdateLead(@Body() body) {
     let leadId;
 
-    body.leads.update.map((a) => (leadId = a.id));
+    if (body.leads.update !== undefined) {
+      body.leads.update.map((a) => (leadId = a.id));
+    } else if (body.leads.status !== undefined) {
+      body.leads.status.map((a) => (leadId = a.id));
+    } else {
+      return;
+    }
 
     const leadData = await this.leadsService.getLeadInfo(
       body.account.id,
@@ -29,20 +41,29 @@ export class LeadsController {
     this.leadsService.createPayload(leadData);
   }
 
-  @All('/webhookdelete')
+  @All('webhookdelete')
   async getInfoForDeleteLead(@Body() body) {
     let leadId;
 
-    body.leads.delete.map((a) => (leadId = a.id));
+    if (body.leads.delete === undefined) {
+      return;
+    } else {
+      body.leads.delete.map((a) => (leadId = a.id));
+    }
 
     this.leadsService.ifLeadDelete(leadId);
   }
 
-  @All('/webhookaddlead')
+  @All('webhookaddlead')
   async getInfoForAddLead(@Body() body) {
     let leadId;
 
-    body.leads.add.map((a) => (leadId = a.id));
+    if (body.leads.add === undefined) {
+      return;
+    } else {
+      body.leads.add.map((a) => (leadId = a.id));
+    }
+
     this.leadsService.leadCreate(leadId, body.leads.add);
   }
 }
