@@ -23,6 +23,7 @@ export class LeadsController {
   }
   @All('webhookupdate')
   async getInfoForUpdateLead(@Body() body) {
+    console.log(body);
     let leadId;
 
     if (body.leads.update !== undefined) {
@@ -38,7 +39,7 @@ export class LeadsController {
       leadId,
     );
 
-    this.leadsService.createPayload(leadData);
+    return await this.leadsService.createPayload(leadData);
   }
 
   @All('webhookdelete')
@@ -51,7 +52,7 @@ export class LeadsController {
       body.leads.delete.map((a) => (leadId = a.id));
     }
 
-    this.leadsService.ifLeadDelete(leadId);
+    return await this.leadsService.ifLeadDelete(leadId);
   }
 
   @All('webhookaddlead')
@@ -64,6 +65,11 @@ export class LeadsController {
       body.leads.add.map((a) => (leadId = a.id));
     }
 
-    this.leadsService.leadCreate(leadId, body.leads.add);
+    return await this.leadsService.leadCreate(leadId, body.leads.add);
+  }
+
+  @All('getallleads')
+  async getLeadForCrm() {
+    return await this.leadsService.getAllLeadForCRM();
   }
 }

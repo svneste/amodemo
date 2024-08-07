@@ -91,8 +91,7 @@ export class LeadsService {
         idLead: leadID,
       },
     });
-    lead.status_id = '000';
-    return await this.leadsRepo.save(lead);
+    return await this.leadsRepo.remove(lead);
   }
 
   // при создании сделки
@@ -134,11 +133,12 @@ export class LeadsService {
     });
   }
 
-  async onModuleInit() {
+  async getAllLeadForCRM() {
     const api = await this.createApiService(30938754);
+    console.log('Запустили получение сделок');
 
-    for (let i = 1; i < 25; i++) {
-      const leadlist = await api.get(`/api/v4/leads?page=${i}`);
+    for (let i = 0; i < 35; i++) {
+      const leadlist = await api.get(`/api/v4/leads?limit=100&page=${i}`);
       if (leadlist.data.length === 0) {
         return;
       } else {
