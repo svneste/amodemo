@@ -147,4 +147,19 @@ export class LeadsService {
       }
     }
   }
+
+  async onModuleInit() {
+    const api = await this.createApiService(30938754);
+    console.log('Запустили получение сделок');
+
+    for (let i = 0; i < 35; i++) {
+      const leadlist = await api.get(`/api/v4/leads?limit=100&page=${i}`);
+      if (leadlist.data.length === 0) {
+        return;
+      } else {
+        console.log(leadlist.data._embedded.leads, 'Отработал', i);
+        await this.pre(leadlist.data._embedded.leads);
+      }
+    }
+  }
 }
