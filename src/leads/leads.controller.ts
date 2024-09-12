@@ -6,70 +6,16 @@ export class LeadsController {
   constructor(private leadsService: LeadsService) {}
   @All('webhook')
   async getInfoLead(@Body() body) {
-    let leadId;
+    const accountId = body.account.id;
 
-    if (body.leads.status === undefined) {
-      return;
-    } else {
-      body.leads.status.map((a) => (leadId = a.id));
-    }
-
-    const leadData = await this.leadsService.getLeadInfo(
-      body.account.id,
-      leadId,
-    );
-
-    this.leadsService.createPayload(leadData);
-  }
-  @All('webhookupdate')
-  async getInfoForUpdateLead(@Body() body) {
-    console.log(body);
-    let leadId;
-
-    if (body.leads.update !== undefined) {
-      body.leads.update.map((a) => (leadId = a.id));
-    } else if (body.leads.status !== undefined) {
-      body.leads.status.map((a) => (leadId = a.id));
-    } else {
+    const leadId = await this.leadsService.checkRequest(body);
+    if (leadId === undefined) {
       return;
     }
+    const leadInfo = await this.leadsService.getLeadInfo(accountId, leadId);
 
-    const leadData = await this.leadsService.getLeadInfo(
-      body.account.id,
-      leadId,
-    );
-
-    return await this.leadsService.createPayload(leadData);
-  }
-
-  @All('webhookdelete')
-  async getInfoForDeleteLead(@Body() body) {
-    let leadId;
-
-    if (body.leads.delete === undefined) {
-      return;
-    } else {
-      body.leads.delete.map((a) => (leadId = a.id));
-    }
-
-    return await this.leadsService.ifLeadDelete(leadId);
-  }
-
-  @All('webhookaddlead')
-  async getInfoForAddLead(@Body() body) {
-    let leadId;
-
-    if (body.leads.add === undefined) {
-      return;
-    } else {
-      body.leads.add.map((a) => (leadId = a.id));
-    }
-
-    return await this.leadsService.leadCreate(leadId, body.leads.add);
-  }
-
-  @All('getallleads')
-  async getLeadForCrm() {
-    return await this.leadsService.getAllLeadForCRM();
+    const payload = await this.leadsService.createPayload(leadInfo);
+    const leadForBase = await this.leadsService.saveLeadData(payload);
+    return leadForBase;
   }
 }
