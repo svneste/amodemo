@@ -1,4 +1,4 @@
-import { All, Body, Controller, Get, Query } from '@nestjs/common';
+import { All, Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { LeadsService } from './leads.service';
 
 @Controller('leads')
@@ -17,5 +17,11 @@ export class LeadsController {
     const payload = await this.leadsService.createPayload(leadInfo);
     const leadForBase = await this.leadsService.saveLeadData(payload);
     return leadForBase;
+  }
+  // сделать запрос по которому мы сможем выгружать сделки отдельно для каждого сотрудника
+
+  @Get('user/:id')
+  getLeadsForUser(@Param('id') id: string) {
+    return this.leadsService.getLeadsForUser(id);
   }
 }

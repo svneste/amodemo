@@ -181,17 +181,33 @@ export class LeadsService {
     }
   }
 
-  async onModuleInit() {
-    const api = await this.createApiService(30938754);
-    console.log('Запустили получение сделок');
+  // async onModuleInit() {
+  //   const api = await this.createApiService(30938754);
+  //   console.log('Запустили получение сделок');
 
-    for (let i = 0; i < 35; i++) {
-      const leadlist = await api.get(`/api/v4/leads?limit=100&page=${i}`);
-      if (leadlist.data.length === 0) {
+  //   for (let i = 0; i < 35; i++) {
+  //     const leadlist = await api.get(`/api/v4/leads?limit=100&page=${i}`);
+  //     if (leadlist.data.length === 0) {
+  //       return;
+  //     } else {
+  //       console.log(leadlist.data._embedded.leads, 'Отработал', i);
+  //       await this.pre(leadlist.data._embedded.leads);
+  //     }
+  //   }
+  // }
+
+  async getLeadsForUser(id) {
+    const api = await this.createApiService(30938754);
+
+    for (let i = 0; i < 350; i++) {
+      const leadListUsers = await api.get(
+        `/api/v4/leads?filter[responsible_user_id]=${id}&limit=10&page=${i}`,
+      );
+      if (leadListUsers.data.length === 0) {
         return;
       } else {
-        console.log(leadlist.data._embedded.leads, 'Отработал', i);
-        await this.pre(leadlist.data._embedded.leads);
+        console.log(leadListUsers.data._embedded.leads, 'Отработал', i);
+        await this.pre(leadListUsers.data._embedded.leads);
       }
     }
   }
