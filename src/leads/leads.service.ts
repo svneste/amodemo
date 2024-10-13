@@ -39,18 +39,6 @@ export class LeadsService {
     if (!lead) {
       return await this.leadsRepo.save(payload);
     } else {
-      if (lead.invoice === null && payload.invoice !== null) {
-        lead.dateInvoice = new Date();
-      } else {
-        lead.dateInvoice;
-      }
-
-      if (lead.bill === null && payload.bill !== null) {
-        lead.dateBill = new Date();
-      } else {
-        lead.dateBill;
-      }
-
       lead.createdLead = payload.createdLead;
       lead.updatedLead = payload.updatedLead;
       lead.closedLead = payload.closedLead;
@@ -62,6 +50,7 @@ export class LeadsService {
       lead.invoice = payload.invoice;
       lead.bill = payload.bill;
       lead.service = payload.service;
+      lead.dateFullBill = payload.dateFullBill;
       return await this.leadsRepo.save(lead);
     }
   }
@@ -80,9 +69,10 @@ export class LeadsService {
       invoice: null,
       bill: null,
       service: null,
-      dateInvoice: null,
-      dateBill: null,
+      dateFullBill: null,
     };
+
+    console.log(leadInfo.custom_fields_values);
 
     if (leadInfo.custom_fields_values === null) {
       return payload;
@@ -96,6 +86,11 @@ export class LeadsService {
         }
         if (a.field_id === 917745) {
           a.values.map((a) => (payload.service = a.value));
+        }
+        if (a.field_id === 985739) {
+          a.values.map(
+            (a) => (payload.dateFullBill = new Date(a.value * 1000)),
+          );
         }
       });
     }
@@ -122,7 +117,7 @@ export class LeadsService {
 
   // Подготовка партии сделок и сохранение сделок в базу
   async pre(leadlist) {
-    await leadlist.map((a) => {
+    leadlist.map((a) => {
       this.createPayloadLoadingLead(a);
     });
   }
@@ -141,8 +136,6 @@ export class LeadsService {
       invoice: null,
       bill: null,
       service: null,
-      dateInvoice: null,
-      dateBill: null,
     };
 
     if (leadInfo.custom_fields_values === null) {
@@ -181,25 +174,10 @@ export class LeadsService {
     }
   }
 
-  // async onModuleInit() {
-  //   const api = await this.createApiService(30938754);
-  //   console.log('Запустили получение сделок');
-
-  //   for (let i = 0; i < 35; i++) {
-  //     const leadlist = await api.get(`/api/v4/leads?limit=100&page=${i}`);
-  //     if (leadlist.data.length === 0) {
-  //       return;
-  //     } else {
-  //       console.log(leadlist.data._embedded.leads, 'Отработал', i);
-  //       await this.pre(leadlist.data._embedded.leads);
-  //     }
-  //   }
-  // }
-
   async getLeadsForUser(id) {
     const api = await this.createApiService(30938754);
 
-    for (let i = 0; i < 350; i++) {
+    for (let i = 0; i < 700; i++) {
       const leadListUsers = await api.get(
         `/api/v4/leads?filter[responsible_user_id]=${id}&limit=10&page=${i}`,
       );
@@ -208,6 +186,19 @@ export class LeadsService {
       } else {
         console.log(leadListUsers.data._embedded.leads, 'Отработал', i);
         await this.pre(leadListUsers.data._embedded.leads);
+      }
+    }
+  }
+
+  async getLeadsAll() {
+    const api = await this.createApiService(30938754);
+    for (let i = 0; i < 10000; i++) {
+      const leadAll = await api.get(`/api/v4/leads?limit=15&page=${i}`);
+      if (leadAll.data.length === 0) {
+        return;
+      } else {
+        console.log(leadAll.data._embedded.leads, 'Отработал', i);
+        await this.pre(leadAll.data._embedded.leads);
       }
     }
   }

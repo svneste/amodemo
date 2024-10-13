@@ -24,4 +24,9 @@ export class LeadsController {
   getLeadsForUser(@Param('id') id: string) {
     return this.leadsService.getLeadsForUser(id);
   }
+
+  @Get('getall')
+  async getLeadsAll() {
+    return await this.leadsService.getLeadsAll();
+  }
 }

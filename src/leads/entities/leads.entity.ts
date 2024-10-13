@@ -53,9 +53,6 @@ export class Leads {
   @Column({ nullable: true })
   service: string;
 
-  @Column({ nullable: true })
-  dateInvoice: Date;
-
-  @Column({ nullable: true })
-  dateBill: Date;
+  @Column({ nullable: true, type: 'timestamp' })
+  dateFullBill: Date;
 }
