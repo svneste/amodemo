@@ -136,6 +136,7 @@ export class LeadsService {
       invoice: null,
       bill: null,
       service: null,
+      dateFullBill: null,
     };
 
     if (leadInfo.custom_fields_values === null) {
@@ -150,6 +151,11 @@ export class LeadsService {
         }
         if (a.field_id === 917745) {
           a.values.map((a) => (payload.service = a.value));
+        }
+        if (a.field_id === 985739) {
+          a.values.map(
+            (a) => (payload.dateFullBill = new Date(a.value * 1000)),
+          );
         }
       });
     }
