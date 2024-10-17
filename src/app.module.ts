@@ -14,9 +14,11 @@ import { LeadsModule } from './leads/leads.module';
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
+      // port: 5441,
       port: 5433,
       username: 'svneste3',
       password: '3704',
+      // database: 'widget1',
       database: 'nsvwidget',
       autoLoadEntities: true,
       synchronize: true,

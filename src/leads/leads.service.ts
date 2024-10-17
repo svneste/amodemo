@@ -51,6 +51,7 @@ export class LeadsService {
       lead.bill = payload.bill;
       lead.service = payload.service;
       lead.dateFullBill = payload.dateFullBill;
+      lead.dateInvoice = payload.dateInvoice;
       return await this.leadsRepo.save(lead);
     }
   }
@@ -70,6 +71,7 @@ export class LeadsService {
       bill: null,
       service: null,
       dateFullBill: null,
+      dateInvoice: null,
     };
 
     console.log(leadInfo.custom_fields_values);
@@ -91,6 +93,9 @@ export class LeadsService {
           a.values.map(
             (a) => (payload.dateFullBill = new Date(a.value * 1000)),
           );
+        }
+        if (a.field_id === 985767) {
+          a.values.map((a) => (payload.dateInvoice = new Date(a.value * 1000)));
         }
       });
     }
@@ -117,9 +122,9 @@ export class LeadsService {
 
   // Подготовка партии сделок и сохранение сделок в базу
   async pre(leadlist) {
-    leadlist.map((a) => {
-      this.createPayloadLoadingLead(a);
-    });
+    for (const lead of leadlist) {
+      await this.createPayloadLoadingLead(lead);
+    }
   }
 
   async createPayloadLoadingLead(leadInfo) {
@@ -137,6 +142,7 @@ export class LeadsService {
       bill: null,
       service: null,
       dateFullBill: null,
+      dateInvoice: null,
     };
 
     if (leadInfo.custom_fields_values === null) {
@@ -156,6 +162,9 @@ export class LeadsService {
           a.values.map(
             (a) => (payload.dateFullBill = new Date(a.value * 1000)),
           );
+        }
+        if (a.field_id === 985767) {
+          a.values.map((a) => (payload.dateInvoice = new Date(a.value * 1000)));
         }
       });
     }
@@ -199,12 +208,17 @@ export class LeadsService {
   async getLeadsAll() {
     const api = await this.createApiService(30938754);
     for (let i = 0; i < 10000; i++) {
-      const leadAll = await api.get(`/api/v4/leads?limit=15&page=${i}`);
-      if (leadAll.data.length === 0) {
-        return;
-      } else {
-        console.log(leadAll.data._embedded.leads, 'Отработал', i);
-        await this.pre(leadAll.data._embedded.leads);
+      try {
+        const leadAll = await api.get(`/api/v4/leads?limit=50&page=${i}`);
+        if (leadAll.data.length === 0 || !leadAll.data) {
+          break;
+        } else {
+          console.log(leadAll.data._embedded.leads, 'Отработал', i);
+          await this.pre(leadAll.data._embedded.leads);
+        }
+      } catch (error) {
+        console.error('Ошибка при получении лидов:', error);
+        break;
       }
     }
   }

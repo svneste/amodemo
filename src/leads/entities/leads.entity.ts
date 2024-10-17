@@ -23,7 +23,7 @@ export class Leads {
   @Column()
   updatedLead: number;
 
-  @Column({ nullable: true })
+  @Column()
   closedLead: number;
 
   @Column()
@@ -55,4 +55,7 @@ export class Leads {
 
   @Column({ nullable: true, type: 'timestamp' })
   dateFullBill: Date;
+
+  @Column({ nullable: true, type: 'timestamp' })
+  dateInvoice: Date;
 }
