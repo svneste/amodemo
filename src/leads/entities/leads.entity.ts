@@ -23,7 +23,7 @@ export class Leads {
   @Column()
   updatedLead: number;
 
-  @Column()
+  @Column({ nullable: true })
   closedLead: number;
 
   @Column()
